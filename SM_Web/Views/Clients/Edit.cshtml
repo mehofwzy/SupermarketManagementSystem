@@ -1,0 +1,95 @@
+﻿@model SM_Web.Models.Client
+
+@{
+    ViewData["Title"] = "Edit Client";
+}
+
+<div class="container-fluid">
+@*     <!-- Breadcrumb -->
+    <div class="page-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Clients" asp-action="Index">Clients</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit @Model.Name</li>
+            </ol>
+        </nav>
+    </div> *@
+
+    <!-- Enhanced Breadcrumb -->
+    <div class="page-header mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent px-0 mb-0">
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                        <span class="text-primary">Dashboard</span>
+                    </a>
+                </li> 
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Clients" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-users me-2 me-2 text-primary"></i>
+                        <span class="text-primary">Clients</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item fs-sm active d-flex align-items-center" aria-current="page">
+                    <i class="fas fa-edit me-2 text-muted"></i>
+                    <span class="text-muted">Edit @Model.Name</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Client</h1>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary text-white">
+            <h6 class="m-0 font-weight-bold">Edit Client Information</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group row mb-3">
+                    <label class="col-md-2 col-form-label">Name *</label>
+                    <div class="col-md-10">
+                        <input asp-for="Name" class="form-control" required>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-md-2 col-form-label">Address</label>
+                    <div class="col-md-10">
+                        <input asp-for="Address" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-md-2 col-form-label">Phone Number</label>
+                    <div class="col-md-10">
+                        <input asp-for="PhoneNumber" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group row mt-4">
+                    <div class="col-md-10 offset-md-2">
+                        <button type="submit" class="btn btn-success mr-2">
+                            <i class="fas fa-save mr-2"></i> Save Changes
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times mr-2"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

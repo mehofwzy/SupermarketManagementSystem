@@ -1,0 +1,309 @@
+﻿@model SM_Web.ViewModels.BillViewModel
+
+@{
+    ViewData["Title"] = "Bills Management";
+}
+
+<div class="container-fluid">
+@*     <!-- Breadcrumb -->
+    <div class="page-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Bills</li>
+            </ol>
+        </nav>
+    </div> *@
+
+    <!-- Enhanced Breadcrumb -->
+    <div class="page-header mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent px-0 mb-0">
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                        <span class="text-primary">Dashboard</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item fs-sm active d-flex align-items-center" aria-current="page">
+                    <i class="fas fa-file-invoice me-2 text-muted"></i>
+                    <span class="text-muted">Bills</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Bills Management</h1>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus-circle mr-2"></i> Create New Bill
+        </a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Bills</h6>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" method="get" class="form">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label">Client</label>
+                        <select asp-for="ClientId" name="ClientId" class="form-control" asp-items="@(new SelectList(Model.Clients, "Id", "Name"))">
+                            <option value="">-- All Clients --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Client Phone</label>
+                        <input type="text" name="clientPhone" class="form-control" placeholder="Client Phone" value="@Model.ClientPhone">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Bill Number</label>
+                        <input type="number" name="billNumber" class="form-control" placeholder="Bill Number" value="@Model.BillNumber">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Date From</label>
+                        <input type="date" name="fromDate" class="form-control" value="@Model.FromDate">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Date To</label>
+                        <input type="date" name="toDate" class="form-control" value="@Model.ToDate">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Bill Type</label>
+                        <select name="billTypeId" class="form-select">
+                            <option value="">-- All Types --</option>
+                            <option value="1C41A90F-7897-4ACB-8EFF-5CF3DC1BDC3B">Sale</option>
+                            <option value="FFD90191-1EFF-47AF-AB81-4751B96D1DFF">Return</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="row mt-3">
+                    <div class="col-md-12 d-flex justify-content-start gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bills List Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Bills List</h6>
+            <div id="paginationInfo" class="text-muted small">
+                Showing @(Model.Bills.Count == 0 ? "0" : ((Model.Page - 1) * Model.PageSize + 1)) -
+                @(Math.Min(Model.Page * Model.PageSize, Model.TotalRecords)) of @Model.TotalRecords bills
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Bill #</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Phone</th>
+                            <th>Items Total</th>
+                            <th>Type</th>
+                            <th>Total Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billsTableBody">
+                        @if (Model.Bills.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">No bills found matching your criteria</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var bill in Model.Bills)
+                            {
+                                <tr>
+                                    <td class="text-center">@bill.BillNumber</td>
+                                    <td class="text-center">@bill.BillDate?.ToString("yyyy-MM-dd hh:mm tt")</td>
+                                    <td>@bill.ClientName</td>
+                                    <td class="text-center">@bill.ClientPhone</td>
+                                    <td class="text-center"> <a asp-action="Details" title="View Items" asp-route-id="@bill.Id" class="btn btn-info btn-sm">@bill.ItemsTotal Items</a></td>
+                                    <td class="text-center">
+                                        <span class="badge @(bill.BillTypeName == "Sale" ? "badge-success" : "badge-warning")">
+                                            @bill.BillTypeName
+                                        </span>
+                                    </td>
+                                    <td class="font-weight-bold text-center text-success">$@bill.TotalAmount</td>
+                                    <td class="text-center">
+                                        <div role="group">
+                                            <a asp-action="Details" title="Details" asp-route-id="@bill.Id" class="btn btn-info btn-sm">
+                                                <i class="fas fa-list"></i>
+                                            </a>
+                                            <a asp-action="Delete" title="Delete" asp-route-id="@bill.Id" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalRecords > Model.PageSize)
+            {
+                int totalPages = (int)Math.Ceiling((double)Model.TotalRecords / Model.PageSize);
+                int startPage = Math.Max(1, Model.Page - 2);
+                int endPage = Math.Min(totalPages, Model.Page + 2);
+
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <span class="page-link">Total Records: @Model.TotalRecords</span>
+                        </li>
+
+                        <!-- Previous Button -->
+                        <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                            <a class="page-link pagination-link" href="#" data-page="@(Model.Page - 1)" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+
+                        @if (startPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link pagination-link" href="#" data-page="1">1</a>
+                            </li>
+                            if (startPage > 2)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+                        }
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == Model.Page ? "active" : "")">
+                                <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                            </li>
+                        }
+
+                        @if (endPage < totalPages)
+                        {
+                            if (endPage < totalPages - 1)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+                            <li class="page-item">
+                                <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
+                            </li>
+                        }
+
+                        <!-- Next Button -->
+                        <li class="page-item @(Model.Page == totalPages ? "disabled" : "")">
+                            <a class="page-link pagination-link" href="#" data-page="@(Model.Page + 1)" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table thead th {
+            background-color: #f8f9fc;
+            color: #5a5c69;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background-color: #1cc88a;
+        }
+
+        .badge-warning {
+            background-color: #f6c23e;
+        }
+
+        .btn-group {
+            box-shadow: none;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle form submission with AJAX
+            $('#filterForm').submit(function(e) {
+                e.preventDefault();
+                loadBills(1); // Always go to first page when applying new filters
+            });
+
+            // Handle pagination clicks
+            $(document).on('click', '.pagination-link', function(e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                loadBills(page);
+            });
+
+            function loadBills(page) {
+                var formData = $('#filterForm').serializeArray();
+                formData.push({ name: 'page', value: page });
+
+                $.ajax({
+                    url: '@Url.Action("Index", "Bills")',
+                    type: 'GET',
+                    data: formData,
+                    beforeSend: function() {
+                        // Show loading indicator
+                        $('#billsTableBody').html('<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></td></tr>');
+                    },
+                    success: function(response) {
+                        // Parse the HTML response
+                        var $response = $(response);
+
+                        // Update table body
+                        $('#billsTableBody').html($response.find('#billsTableBody').html());
+
+                        // Update pagination
+                        $('.pagination').replaceWith($response.find('.pagination'));
+
+                        // Update pagination info
+                        $('#paginationInfo').html($response.find('#paginationInfo').html());
+
+                        // Update URL without reloading
+                        var queryString = $.param(formData);
+                        history.pushState(null, '', '?' + queryString);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#billsTableBody').html('<tr><td colspan="8" class="text-center text-danger py-4">Error loading bills. Please try again.</td></tr>');
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    </script>
+}

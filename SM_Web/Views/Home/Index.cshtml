@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Welcome, <span class="user-name">Mohamed</span></h1>
+        <p class="dashboard-subtitle">Admin Dashboard</p>
+    </div>
+
+    <div class="dashboard-actions">
+        <div class="action-row">
+            <a class="action-card bg-primary" asp-controller="Clients" asp-action="Index">
+                <i class="fas fa-users action-icon"></i>
+                <span class="action-title">Clients</span>
+                <span class="action-description">Manage client records</span>
+            </a>
+
+            <a class="action-card bg-success" asp-controller="Products" asp-action="Index">
+                <i class="fas fa-boxes action-icon"></i>
+                <span class="action-title">Products</span>
+                <span class="action-description">View product inventory</span>
+            </a>
+        </div>
+
+        <div class="action-row">
+            <a class="action-card bg-info" asp-controller="Bills" asp-action="Index">
+                <i class="fas fa-file-invoice-dollar action-icon"></i>
+                <span class="action-title">Bills</span>
+                <span class="action-description">View all invoices</span>
+            </a>
+
+            <a class="action-card bg-warning" asp-controller="Bills" asp-action="Create">
+                <i class="fas fa-plus-circle action-icon"></i>
+                <span class="action-title">New Bill</span>
+                <span class="action-description">Create new invoice</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .user-name {
+        color: #3498db;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.2rem;
+        color: #7f8c8d;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .action-row {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .action-card {
+        flex: 1;
+        min-width: 250px;
+        max-width: 300px;
+        padding: 2rem 1.5rem;
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: white;
+        }
+
+    .action-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-description {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .bg-primary {
+        background-color: #3498db;
+    }
+
+    .bg-success {
+        background-color: #2ecc71;
+    }
+
+    .bg-info {
+        background-color: #1abc9c;
+    }
+
+    .bg-warning {
+        background-color: #f39c12;
+    }
+
+    @@media (max-width: 768px) {
+        .action-row {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-card {
+            width: 100%;
+        }
+    }
+</style>
+
+@section Scripts {
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+}

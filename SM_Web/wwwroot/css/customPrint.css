@@ -1,0 +1,45 @@
+﻿/*@media print {
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .card {
+        border: none;
+        box-shadow: none;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+}
+*/
+
+@media print {
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        background: none !important;
+    }
+
+    .bill-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    hr {
+        border: 1px solid black;
+    }
+}

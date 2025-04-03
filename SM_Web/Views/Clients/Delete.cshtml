@@ -1,0 +1,129 @@
+﻿@model SM_Web.Models.Client
+
+@{
+    ViewData["Title"] = "Delete Client";
+}
+
+<div class="container-fluid">
+@*     <!-- Breadcrumb -->
+    <div class="page-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Clients" asp-action="Index">Clients</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete @Model.Name</li>
+            </ol>
+        </nav>
+    </div> *@
+
+
+    <!-- Enhanced Breadcrumb -->
+    <div class="page-header mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent px-0 mb-0">
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                        <span class="text-primary">Dashboard</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Clients" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-users me-2 me-2 text-primary"></i>
+                        <span class="text-primary">Clients</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item fs-sm active d-flex align-items-center" aria-current="page">
+                    <i class="fas fa-trash-alt me-2 text-muted"></i>
+                    <span class="text-muted">Delete @Model.Name</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-danger">Delete Client</h1>
+    </div>
+
+    <!-- Delete Confirmation Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-danger text-white">
+            <h6 class="m-0 font-weight-bold">Confirm Deletion</h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <strong>Warning!</strong> Are you sure you want to permanently delete this client?
+            </div>
+
+            <div class="client-details">
+                <div class="detail-item">
+                    <span class="font-weight-bold">Name:</span>
+                    <span>@Model.Name</span>
+                </div>
+                <div class="detail-item">
+                    <span class="font-weight-bold">Address:</span>
+                    <span>@Model.Address</span>
+                </div>
+                <div class="detail-item">
+                    <span class="font-weight-bold">Phone Number:</span>
+                    <span>@Model.PhoneNumber</span>
+                </div>
+                <div class="detail-item">
+                    <span class="font-weight-bold">Balance:</span>
+                    <span class="@(Model.Balance < 0 ? "text-danger" : "text-success")">$@Model.Balance</span>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post" class="mt-4">
+                <input type="hidden" asp-for="Id" />
+                <div class="text-right">
+                    <a asp-action="Index" class="btn btn-secondary mr-2">
+                        <i class="fas fa-arrow-left mr-2"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt mr-2"></i> Confirm Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .client-details {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.35rem;
+            border: 1px solid #e3e6f0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+            .detail-item:last-child {
+                border-bottom: none;
+            }
+
+        .alert-warning {
+            border-left: 4px solid #f6c23e;
+        }
+
+        .card-header.bg-danger {
+            background-color: #e74a3b !important;
+        }
+
+        .text-danger {
+            color: #e74a3b !important;
+        }
+
+        .text-success {
+            color: #1cc88a !important;
+        }
+    </style>
+}

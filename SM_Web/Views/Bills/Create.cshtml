@@ -1,0 +1,401 @@
+﻿@model SM_Web.ViewModels.CreateBillViewModel
+
+@{
+    ViewData["Title"] = "Create New Bill";
+}
+
+<div class="container-fluid">
+    <!-- Enhanced Breadcrumb -->
+    <div class="page-header mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent px-0 mb-0">
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                        <span class="text-primary">Dashboard</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item fs-sm">
+                    <a asp-controller="Bills" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-file-invoice me-2 text-primary"></i>
+                        <span class="text-primary">Bills</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item fs-sm active d-flex align-items-center" aria-current="page">
+                    <i class="fas fa-plus-circle me-2 text-muted"></i>
+                    <span class="text-muted">Create New Bill</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Create New Bill</h1>
+    </div>
+
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <!-- Left Column - Shopping Cart -->
+            <div class="col-lg-8">
+                <!-- Product Selection Section -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-primary text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-search mr-2"></i> Add Products To Cart
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label">Add by Product Code</label>
+                                <div class="input-group">
+                                    <input type="text" id="productCodeInput" class="form-control" placeholder="Scan or enter product code" />
+                                    <button type="button" class="btn btn-primary" onclick="addProductByCode()">
+                                        <i class="fas fa-plus mr-2"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label">Select Product</label>
+                                <select id="productDropdown" class="form-control" onchange="addProduct()">
+                                    <option value="">Browse Products</option>
+                                    @foreach (var product in Model.Products)
+                                    {
+                                        <option value="@product.Id" data-price="@product.Price" data-code="@product.Code">
+                                            #@product.Code - @product.Name , @product.StockQuantity left
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart Section -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold">
+                                <i class="fas fa-shopping-cart mr-2"></i> Shopping Cart
+                            </h6>
+                            <div class="cart-summary">
+                                <span class="badge me-2">
+                                    <i class="fas fa-cubes me-1"></i> <span id="totalItems">0</span> items
+                                </span>
+                                <span class="badge ">
+                                    <i class="fas fa-boxes me-1"></i> <span id="totalUnits">0</span> units
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th width="100">Quantity</th>
+                                        <th width="100">Price</th>
+                                        <th width="100">Discount</th>
+                                        <th width="100">Total</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cartTable"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="p-3 bg-light">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-bold">Subtotal:</span>
+                                        <span>$<span id="subtotal">0.00</span></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-bold">Discount:</span>
+                                        <span class="text-danger">-$<span id="totalDiscount">0.00</span></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-bold">VAT (0%):</span>
+                                        <span>$<span id="totalVat">0.00</span></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center pt-2">
+                                        <h5 class="mb-0 fw-bold">Total Amount:</h5>
+                                        <h4 class="mb-0 text-success">$<span id="cartTotal">0.00</span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Bill Details -->
+            <div class="col-lg-4">
+                <!-- Bill Details Section -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-primary text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-file-invoice mr-2"></i> Bill Details
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Select Client</label>
+                            <select id="clientDropdown" asp-for="ClientId" class="form-control" asp-items="@(new SelectList(Model.Clients, "Id", "Name"))">
+                                <option value="">-- Select Client --</option>
+                            </select>
+                            <span asp-validation-for="ClientId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Client Name</label>
+                            <input type="text" id="clientName" asp-for="ClientName" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Client Address</label>
+                            <input type="text" id="clientAddress" asp-for="ClientAddress" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Client Phone</label>
+                            <input type="text" id="clientPhone" asp-for="ClientPhone" class="form-control" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Bill Date</label>
+                                <input asp-for="BillDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Bill Type</label>
+                                <select asp-for="BillTypeId" class="form-control">
+                                    <option value="1C41A90F-7897-4ACB-8EFF-5CF3DC1BDC3B" selected>Sale</option>
+                                    <option value="FFD90191-1EFF-47AF-AB81-4751B96D1DFF">Return</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-file-invoice mr-2"></i> Create Bill
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Inputs for Cart Items -->
+        <div id="cartItemsContainer"></div>
+    </form>
+</div>
+
+@section Styles {
+    <style>
+        .table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+            .table th, .table td {
+                padding: 12px 15px;
+                vertical-align: middle;
+            }
+
+            .table thead th {
+                background-color: #f8f9fc;
+                color: #5a5c69;
+                border-bottom: 2px solid #e3e6f0;
+            }
+
+            .table tbody tr {
+                border-bottom: 1px solid #e3e6f0;
+            }
+
+            .table input[type="number"] {
+                width: 70px;
+                padding: 6px;
+                text-align: center;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+            }
+
+            .table .btn-danger {
+                padding: 6px 10px;
+            }
+
+        .card-header.bg-primary {
+            background-color: #4e73df !important;
+        }
+
+        input[readonly] {
+            background-color: #f8f9fa;
+        }
+
+        .cart-summary {
+            font-size: 1.2rem;
+        }
+
+        .badge.bg-info {
+            background-color: #17a2b8 !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#productDropdown").select2({
+                placeholder: "Search products...",
+                allowClear: true,
+            });
+
+            $("#clientDropdown").select2();
+
+            $("#clientDropdown").change(function() {
+                var clientId = $(this).val();
+                if (clientId) {
+                    var clients = @Html.Raw(Json.Serialize(Model.Clients));
+                    var selectedClient = clients.find(c => c.id == clientId);
+
+                    if (selectedClient) {
+                        $("#clientName").val(selectedClient.name);
+                        $("#clientAddress").val(selectedClient.address);
+                        $("#clientPhone").val(selectedClient.phoneNumber);
+                    }
+                } else {
+                    $("#clientName").val("");
+                    $("#clientAddress").val("");
+                    $("#clientPhone").val("");
+                }
+            });
+
+            $("#BillDate").val(new Date().toISOString().split('T')[0]);
+        });
+
+        let cart = [];
+
+        function addProduct() {
+            let dropdown = document.getElementById("productDropdown");
+            let selectedOption = dropdown.options[dropdown.selectedIndex];
+
+            if (!selectedOption.value) return;
+
+            let productId = selectedOption.value;
+            let productName = selectedOption.text.split(" , ")[0];
+            let price = parseFloat(selectedOption.getAttribute("data-price"));
+
+            addToCart(productId, productName, price);
+            dropdown.selectedIndex = 0;
+            $("#productDropdown").val(null).trigger('change');
+        }
+
+        function addProductByCode() {
+            let codeInput = document.getElementById("productCodeInput").value.trim();
+            if (!codeInput) return;
+
+            let dropdown = document.getElementById("productDropdown");
+            let foundOption = Array.from(dropdown.options).find(opt => opt.getAttribute("data-code") === codeInput);
+
+            if (!foundOption) {
+                alert("Product not found!");
+                return;
+            }
+
+            let productId = foundOption.value;
+            let productName = foundOption.text.split(" , ")[0];
+            let price = parseFloat(foundOption.getAttribute("data-price"));
+
+            addToCart(productId, productName, price);
+            document.getElementById("productCodeInput").value = "";
+            document.getElementById("productCodeInput").focus();
+        }
+
+        function addToCart(productId, productName, price) {
+            let existing = cart.find(item => item.productId === productId);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({
+                    productId,
+                    productName,
+                    price,
+                    quantity: 1,
+                    discount: 0.00 // Initialize discount to 0
+                });
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartTable = document.getElementById("cartTable");
+            let cartItemsContainer = document.getElementById("cartItemsContainer");
+            cartTable.innerHTML = "";
+            cartItemsContainer.innerHTML = "";
+
+            let subtotal = 0;
+            let totalDiscount = 0;
+            let totalVat = 0;
+            let totalItems = cart.length;
+            let totalUnits = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.quantity;
+                let itemDiscount = item.discount * item.quantity;
+                subtotal += itemTotal;
+                totalDiscount += itemDiscount;
+
+                let row = `<tr>
+                    <td>${item.productName}</td>
+                    <td><input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)" /></td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>$${item.discount.toFixed(2)}</td>
+                    <td>$${(itemTotal - itemDiscount).toFixed(2)}</td>
+                    <td class="text-center"><button class='btn btn-danger btn-sm' onclick='removeFromCart(${index})'><i class='fas fa-trash'></i></button></td>
+                </tr>`;
+                cartTable.innerHTML += row;
+
+                cartItemsContainer.innerHTML += `
+                    <input type="hidden" name="Items[${index}].ProductId" value="${item.productId}" />
+                    <input type="hidden" name="Items[${index}].ProductName" value="${item.productName}" />
+                    <input type="hidden" name="Items[${index}].Quantity" value="${item.quantity}" />
+                    <input type="hidden" name="Items[${index}].Price" value="${item.price}" />
+                `;
+            });
+
+            // Calculate totals
+            let grandTotal = subtotal - totalDiscount + totalVat;
+
+            // Update display
+            document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+            document.getElementById("totalDiscount").innerText = totalDiscount.toFixed(2);
+            document.getElementById("totalVat").innerText = totalVat.toFixed(2);
+            document.getElementById("cartTotal").innerText = grandTotal.toFixed(2);
+            document.getElementById("totalItems").innerText = totalItems;
+            document.getElementById("totalUnits").innerText = totalUnits;
+        }
+
+        function updateQuantity(index, value) {
+            cart[index].quantity = parseInt(value);
+            updateCart();
+        }
+
+        function updateDiscount(index, value) {
+            cart[index].discount = parseFloat(value) || 0;
+            updateCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+    </script>
+}
