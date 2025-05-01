@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SM_Web.Helpers;
 using SM_Web.Models;
 using SM_Web.Services;
 using SM_Web.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -13,14 +16,30 @@ namespace SM_Web.Controllers
     public class ProductsController : Controller
     {
         private readonly ApiService _apiService;
-
-        public ProductsController(ApiService apiService)
+        private readonly AuthService _authService;
+        private readonly JwtHelperService _jwtHelperService;
+        public ProductsController(ApiService apiService, JwtHelperService jwtHelperService, AuthService authService)
         {
             _apiService = apiService;
+            _authService = authService;
+            _jwtHelperService = jwtHelperService;
         }
 
         public async Task<IActionResult> Index(string? code, string? name, Guid? categoryId, decimal? price, int? stockQuantity, int page = 1, int pageSize = 5)
         {
+            //var sd = User.Identity.Name;
+
+            //string? token = Request?.Cookies["jwt"];
+            //string? userid = JwtHelper.GetUserIdFromToken(null, token);
+
+            // Check if the user has permission to view products
+            //Guid userId = Guid.Parse(Request.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (!_authService.CheckUserPermissionAsync(HttpContext, "Product", "View").Result)
+                return RedirectToAction("Error", "Home");
+
+            //if (!_jwtHelperService.HasPermission("view_products"))
+            //    return RedirectToAction("Error", "Home");
+
             var queryParams = new Dictionary<string, string?>
             {
                 { "code", code },
@@ -34,6 +53,10 @@ namespace SM_Web.Controllers
 
             var response = await _apiService.GetAsync<ProductViewModel>("products", queryParams);
 
+            if(response == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
 
             var model = new ProductViewModel
             {

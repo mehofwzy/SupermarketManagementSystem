@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SM_API.Attributes;
+using SM_API.Attributes.SM_API.Attributes;
 using SM_API.Data;
 using SM_API.Models;
 using SM_API.Models.Dtos;
@@ -12,6 +15,8 @@ namespace SM_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+
     public class ProductsController : ControllerBase
     {
         private readonly SupermarketDbContext _context;
@@ -23,6 +28,9 @@ namespace SM_API.Controllers
 
         // GET: api/products
         [HttpGet]
+        //[JWTHasPermission("view_products")]
+        [HasPermission("Product", "View")]
+
         public async Task<IActionResult> GetProducts(
             [FromQuery] string? code,
             [FromQuery] string? name,

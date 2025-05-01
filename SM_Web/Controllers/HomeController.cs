@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SM_Web.Models;
 
@@ -17,6 +18,8 @@ namespace SM_Web.Controllers
         {
             return View();
         }
+        [HttpGet]
+        [AllowAnonymous]
 
         public IActionResult Login()
         {

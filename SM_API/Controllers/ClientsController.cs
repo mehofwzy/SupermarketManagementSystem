@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SM_API.Attributes;
 using SM_API.Data;
 using SM_API.Models;
 using SM_API.Models.Dtos;
@@ -12,6 +14,9 @@ namespace SM_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
+    //[Authorize(Roles = "Admin, emp")]
+
     public class ClientsController : ControllerBase
     {
         private readonly SupermarketDbContext _context;
@@ -30,7 +35,6 @@ namespace SM_API.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 5)
         {
-
             var query = _context.Clients
                 .AsQueryable();
 
@@ -114,9 +118,18 @@ namespace SM_API.Controllers
         }
 
         // PUT: api/clients/{id}
+        [AuthorizePermission("edit")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClient(Guid id, [FromBody] ClientDto clientDto)
         {
+
+            //var permissions = User.Claims
+            //              .Where(c => c.Type == "permission")
+            //              .Select(c => c.Value)
+            //              .ToList();
+
+            //if (!permissions.Contains("edit"))
+            //    return Forbid("You don't have permission to edit.");
 
             var client = await _context.Clients.FindAsync(id);
             if (client == null)

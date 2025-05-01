@@ -113,7 +113,16 @@
                             @foreach (var client in Model.Clients)
                             {
                                 <tr>
-                                    <td>@client.Name</td>
+                                    <td title="@client.Name">
+                                        @{
+                                            if(client.Name.Length > 20){
+                                                <span>@client.Name.Remove(20)...</span>
+                                            }
+                                            else{
+                                                @client.Name
+                                            }
+                                        }
+                                    </td>
                                     <td>@client.Address</td>
                                     <td class="text-center">@client.PhoneNumber</td>
                                     <td class="text-center"> <a asp-controller="Bills" asp-action="Index" title="View Bills" asp-route-ClientId="@client.Id" class="btn btn-info btn-sm">All Bills</a></td>
@@ -213,25 +222,14 @@
 @section Styles {
     <style>
         /* Table styling */
-        .table {
-            width: 100%;
-            margin-bottom: 0;
+        .table thead th {
+            background-color: #f8f9fc;
+            color: #5a5c69;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
         }
-
-            .table th, .table td {
-                padding: 12px 15px;
-                vertical-align: middle;
-            }
-
-            .table thead th {
-                background-color: #f8f9fc;
-                color: #5a5c69;
-                border-bottom: 2px solid #e3e6f0;
-            }
-
-            .table tbody tr {
-                border-bottom: 1px solid #e3e6f0;
-            }
 
         /* Action buttons */
         .btn-group {
@@ -308,8 +306,8 @@
                         $('#paginationInfo').html($response.find('#paginationInfo').html());
 
                         // Update URL without reloading
-                        var queryString = $.param(formData);
-                        history.pushState(null, '', '?' + queryString);
+                        // var queryString = $.param(formData);
+                        // history.pushState(null, '', '?' + queryString);
                     },
                     error: function(xhr, status, error) {
                         $('#clientsTableBody').html('<tr><td colspan="6" class="text-center text-danger py-4">Error loading clients. Please try again.</td></tr>');

@@ -16,6 +16,8 @@ html {
     --secondary-color: #2c3e50;
     --accent-color: #f39c12;
     --sidebar-width: 250px;
+    --transition-speed: 0.8s;
+
 }
 
 body {
@@ -57,10 +59,15 @@ body {
     }
 
     .sidebar-menu .nav-link {
+
+
         color: rgba(255, 255, 255, 0.8);
-        padding: 12px 20px;
+        padding: 12px 15px;
         border-radius: 0;
-        transition: all 0.3s;
+        transition: all var(--transition-speed);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
     }
 
         .sidebar-menu .nav-link:hover,
@@ -94,6 +101,39 @@ body {
 .user-profile img {
     object-fit: cover;
 }
+/* Submenu styles */
+.submenu {
+    list-style: none;
+    padding-left: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-speed);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+    .submenu.show {
+        max-height: 500px;
+    }
+
+
+.submenu .nav-link {
+    padding-left: 45px;
+}
+
+.has-submenu > .nav-link::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-left: auto;
+    transition: transform var(--transition-speed);
+    font-size: 0.8rem;
+}
+
+.has-submenu.active > .nav-link::after {
+    transform: rotate(180deg);
+}
+
+/* Submenu styles */
 
 .main-content {
     margin-left: var(--sidebar-width);
@@ -134,7 +174,26 @@ body {
     .main-content {
         margin-left: 0;
     }
+
+    .mobile-menu-btn {
+        display: block !important;
+    }
 }
+
+.mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 999;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+}
+
+
 
 /* Custom Breadcrumb Styles */
 .breadcrumb {

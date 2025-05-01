@@ -101,6 +101,7 @@ function printBill() {
     var printContent = document.getElementById("printableBill").innerHTML;
     var printContent1 = document.getElementById("printableBill1").innerHTML;
     var printContent2 = document.getElementById("printableBill2").innerHTML;
+    var printContent3 = document.getElementById("printableBill3").innerHTML;
 
     var printWindow = window.open('', '', 'width=900,height=700');
 
@@ -126,6 +127,7 @@ function printBill() {
     //printWindow.document.write('<div class="bill-details">' + printContent1 + '<br/><br/>'+ printContent2 + '</div>');
     printWindow.document.write('<div class="bill-details">' + printContent1 + '</div>');
     printWindow.document.write('<div class="bill-details">' + printContent2 + '</div>');
+    printWindow.document.write('<div class="bill-details">' + printContent3 + '</div>');
 
     printWindow.document.write('</body></html>');
     printWindow.document.close();

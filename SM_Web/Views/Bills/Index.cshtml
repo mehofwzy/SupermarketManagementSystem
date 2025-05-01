@@ -134,7 +134,18 @@
                                 <tr>
                                     <td class="text-center">@bill.BillNumber</td>
                                     <td class="text-center">@bill.BillDate?.ToString("yyyy-MM-dd hh:mm tt")</td>
-                                    <td>@bill.ClientName</td>
+                                    <td title="@bill.ClientName">
+                                        @{
+                                            if (bill.ClientName?.Length > 20)
+                                            {
+                                                <span>@bill.ClientName.Remove(20)...</span>
+                                            }
+                                            else
+                                            {
+                                                @bill.ClientName
+                                            }
+                                        }
+                                    </td>
                                     <td class="text-center">@bill.ClientPhone</td>
                                     <td class="text-center"> <a asp-action="Details" title="View Items" asp-route-id="@bill.Id" class="btn btn-info btn-sm">@bill.ItemsTotal Items</a></td>
                                     <td class="text-center">
@@ -295,8 +306,8 @@
                         $('#paginationInfo').html($response.find('#paginationInfo').html());
 
                         // Update URL without reloading
-                        var queryString = $.param(formData);
-                        history.pushState(null, '', '?' + queryString);
+                        //var queryString = $.param(formData);
+                        //history.pushState(null, '', '?' + queryString);
                     },
                     error: function(xhr, status, error) {
                         $('#billsTableBody').html('<tr><td colspan="8" class="text-center text-danger py-4">Error loading bills. Please try again.</td></tr>');

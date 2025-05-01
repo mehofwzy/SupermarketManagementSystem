@@ -113,7 +113,18 @@
                             {
                                 <tr>
                                     <td>@product.Code</td>
-                                    <td>@product.Name</td>
+                                    <td title="@product.Name">
+                                        @{
+                                            if (product.Name.Length > 20)
+                                            {
+                                                <span>@product.Name.Remove(20)...</span>
+                                            }
+                                            else
+                                            {
+                                                @product.Name
+                                            }
+                                        }
+                                    </td>
                                     <td class="text-center  @(product.StockQuantity <= 5 ? "text-danger font-weight-bold" : "")">
                                         @product.StockQuantity
                                         @if (product.StockQuantity <= 5)
@@ -141,7 +152,7 @@
                     </tbody>
                 </table>
             </div>
-
+            <br />
             <!-- Pagination -->
             @if (Model.TotalRecords > Model.PageSize)
             {
@@ -213,29 +224,14 @@
 @section Styles {
     <style>
         /* Table styling */
-        .table {
-            width: 100%;
-            margin-bottom: 0;
+        .table thead th {
+            background-color: #f8f9fc;
+            color: #5a5c69;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
         }
-
-            .table th, .table td {
-                padding: 12px 15px;
-                vertical-align: middle;
-            }
-
-            .table thead th {
-                background-color: #f8f9fc;
-                color: #5a5c69;
-                border-bottom: 2px solid #e3e6f0;
-            }
-
-            .table tbody tr {
-                border-bottom: 1px solid #e3e6f0;
-            }
-
-                .table tbody tr:last-child {
-                    border-bottom: none;
-                }
 
         /* Action buttons */
         .btn-group {
@@ -310,8 +306,8 @@
                         $('#paginationInfo').html($response.find('#paginationInfo').html());
 
                         // Update URL without reloading
-                        var queryString = $.param(formData);
-                        history.pushState(null, '', '?' + queryString);
+                        // var queryString = $.param(formData);
+                        // history.pushState(null, '', '?' + queryString);
                     },
                     error: function(xhr, status, error) {
                         $('#productsTableBody').html('<tr><td colspan="5" class="text-center text-danger py-4">Error loading products. Please try again.</td></tr>');

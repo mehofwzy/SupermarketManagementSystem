@@ -2,6 +2,47 @@
     ViewData["Title"] = "Dashboard";
 }
 
+@{
+    var token = Context.Request.Cookies["jwt"];
+    var roles = new List<string>();
+    var username = "";
+    var permissions = new List<string>();
+    if (token != null){
+        roles = SM_Web.Helpers.JwtHelper.GetUserRoleClaimsFromToken(token);
+        username = SM_Web.Helpers.JwtHelper.GetUsernameFromToken(token);
+        permissions = SM_Web.Helpers.JwtHelper.GetUserPermissionClaimsFromToken(token);
+    }
+
+}
+<br/>
+<br/>
+<hr />
+<div>
+    @username - roles:
+    <ul>
+        @if (roles != null)
+        {
+            foreach (var item in roles)
+            {
+                <li>@item</li>
+            }
+        }
+    </ul> 
+    - Permissions:
+    <ul>@if (permissions != null)
+        {
+            foreach (var item in permissions)
+            {
+                <li>@item</li>
+            }
+        }
+    </ul>
+</div>
+<hr>
+<br>
+<br />
+
+
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1 class="dashboard-title">Welcome, <span class="user-name">Mohamed</span></h1>

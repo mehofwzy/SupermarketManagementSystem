@@ -5,17 +5,6 @@
 }
 
 <div class="container-fluid">
-@*     <!-- Breadcrumb -->
-    <div class="page-header">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item"><a asp-controller="Bills" asp-action="Index">Bills</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Bill #@Model.BillNumber</li>
-            </ol>
-        </nav>
-    </div> *@
-
     <!-- Enhanced Breadcrumb -->
     <div class="page-header mb-4">
         <nav aria-label="breadcrumb">
@@ -33,7 +22,7 @@
                     </a>
                 </li>
                 <li class="breadcrumb-item fs-sm active d-flex align-items-center" aria-current="page">
-                    <i class="fas fa-list me-2 text-muted"></i>
+                    <i class="fas fa-eye me-2 text-muted"></i>
                     <span class="text-muted">Bill #@Model.BillNumber</span>
                 </li>
             </ol>
@@ -50,111 +39,81 @@
         </div>
     </div>
 
-    <!-- Bill Details -->
-    <div id="printableBill">
-
-
-        <div id="printableBill1">
-            <!-- Header Card -->
-            <div class="card shadow mb-4">
+    <!-- Bill Details - Split Layout -->
+    <div class="row" id="printableBill">
+        <!-- Left Column - Products Cart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow h-100">
                 <div class="card-header py-3 bg-primary text-white">
-                    <h5 class="m-0 font-weight-bold">Invoice Details</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <h6 class="font-weight-bold text-primary no-print">Invoice Information</h6>
-                                <p><strong>Invoice No:</strong> @Model.BillNumber</p>
-                                <p><strong>Invoice Type:</strong> <span class="badge @(Model.BillTypeName == "Sale" ? "badge-success" : "badge-warning")">@Model.BillTypeName</span></p>
-                            </div>
-                            <div class="mb-3">
-                                <h6 class="font-weight-bold text-primary no-print">Store Information</h6>
-                                <p><strong>Address:</strong> Cairo-NasrCity-ktab-st, Branch-1</p>
-                                <p><strong>Phone:</strong> 02-224455</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <h6 class="font-weight-bold text-primary no-print">Date & Client</h6>
-                                <p><strong>Date:</strong> @Model.BillDate?.ToString("yyyy-MM-dd hh:mm tt")</p>
-                                <p><strong>Client:</strong> @Model.ClientName</p>
-                            </div>
-                            <div class="mb-3">
-                                <h6 class="font-weight-bold text-primary no-print">Cashier Information</h6>
-                                <p><strong>Cashier:</strong> Admin/Mohamed</p>
-                                <p><strong>Cashier Code:</strong> A3037</p>
-                            </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold  no-print"><i class="fas fa-shopping-cart mr-2"></i> Products Cart</h6>
+                        <div class="cart-summary no-print">
+                            <span class="badge me-2">
+                                <i class="fas fa-cubes me-1"></i> @Model.Items.Count items
+                            </span>
+                            <span class="badge ">
+                                <i class="fas fa-boxes me-1"></i> @Model.Items.Sum(i => i.Quantity) units
+                            </span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-        </div>
-
-
-        <div id="printableBill2">
-            <!-- Products Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 bg-secondary text-white">
-                    <h5 class="m-0 font-weight-bold no-print">Products</h5>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>Product</th>
-                                    <th class="text-center">Quantity</th>
-                                    <th class="text-center">Unit Price</th>
-                                    <th class="text-center">Discount</th>
-                                    <th class="text-center">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Items)
-                                {
+                    <div id="printableBill2" class="sss">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead class="thead-light">
                                     <tr>
-                                        <td>@item.ProductName</td>
-                                        <td class="text-center">@item.Quantity</td>
-                                        <td class="text-center">$@item.Price</td>
-                                        <td class="text-center">$00.00</td>
-                                        <td class="text-center text-success font-weight-bold">$@((item.Quantity * item.Price))</td>
+                                        <th>Product</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-center">Unit Price</th>
+                                        <th class="text-center">Discount</th>
+                                        <th class="text-center">Total</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        <tr>
+                                            <td>@item.ProductName</td>
+                                            <td class="text-center">@item.Quantity</td>
+                                            <td class="text-center">$@item.Price</td>
+                                            <td class="text-center">$0.00</td>
+                                            <td class="text-center text-success font-weight-bold">
+                                                $@((item.Quantity * item.Price))
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <br />
                     <!-- Summary Section -->
-                    <div class="p-4">
-                        <div class="row row">
+                    <div id="printableBill3" class="p-4 bg-light">
+                        <div class="row">
                             <div class="">
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="font-weight-bold">Amount Before Discount:</span>
-                                    <span class="text-success">$@Model.TotalAmount</span>
+                                    <span class="font-weight-bold">Subtotal:</span>
+                                    <span>$@Model.Items.Sum(i => i.Quantity * i.Price)</span>
                                 </div>
-                                <hr />
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="font-weight-bold">Total Discount:</span>
-                                    <span class="text-danger">-$00.00</span>
+                                    <span class="text-danger">-$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="font-weight-bold">VAT (0%):</span>
+                                    <span>$0.00</span>
                                 </div>
                                 <hr />
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="font-weight-bold">Total Vat:</span>
-                                    <span class="text-success">$00.00</span>
-                                </div>
-                                <hr />
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="font-weight-bold">Paid In Cash:</span>
+                                    <span class="font-weight-bold">Paid Amount:</span>
                                     <span class="text-success">$@Model.TotalAmount</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="font-weight-bold">Rest:</span>
-                                    <span class="text-success">$00.00</span>
+                                    <span class="font-weight-bold">Change:</span>
+                                    <span class="text-success">$0.00</span>
                                 </div>
                                 <hr />
-                                <div class="d-flex justify-content-between mb-2">
+                                <div class="d-flex justify-content-between">
                                     <span class="font-weight-bold"><strong>Total Amount: </strong></span>
                                     <span class="text-success">$@Model.TotalAmount</span>
                                 </div>
@@ -164,7 +123,65 @@
                 </div>
             </div>
         </div>
+        <!-- Right Column - Invoice Details -->
+        <div id="printableBill1" class="col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-primary text-white ">
+                    <h6 class="m-0 font-weight-bold no-print"><i class="fas fa-file-invoice mr-2"></i> Invoice Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold text-primary border-bottom pb-2 no-print">Bill Information</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Bill Number:</span>
+                            <span class="font-weight-bold">@Model.BillNumber</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Date:</span>
+                            <span>@Model.BillDate?.ToString("yyyy-MM-dd hh:mm tt")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Type:</span>
+                            <span class="badge @(Model.BillTypeName == "Sale" ? "badge-success" : "badge-warning")">
+                                @Model.BillTypeName
+                            </span>
+                        </div>
+                    </div>
 
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold text-primary border-bottom pb-2 no-print">Client Information</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted"><span class="print">Client </span>Name:</span>
+                            <span>@Model.ClientName</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted"><span class="print">Client </span>Phone:</span>
+                            <span>@Model.ClientPhone</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted"><span class="print">Client </span>Address:</span>
+                            <span class="text-end">@Model.ClientAddress</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold text-primary border-bottom pb-2 no-print">Store Information</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Branch:</span>
+                            <span>Cairo-NasrCity-ktab-st</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Phone:</span>
+                            <span>02-224455</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Cashier:</span>
+                            <span>Admin/Mohamed (A3037)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Action Buttons -->
@@ -183,28 +200,38 @@
 @section Styles {
     <style>
         /* Print-specific styles */
+        /* Print-specific styles */
         @@media print {
             body * {
                 visibility: hidden;
             }
+
             #printableBill, #printableBill * {
                 visibility: visible;
             }
+
             #printableBill {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
             }
+
             .no-print {
                 display: none !important;
             }
+
             .card-header {
                 color: #fff !important;
             }
+
             .table thead th {
                 background-color: #f8f9fc !important;
                 color: #5a5c69 !important;
+            }
+
+            .print {
+                display: block;
             }
         }
 
@@ -212,49 +239,68 @@
         .badge-success {
             background-color: #1cc88a;
         }
-        
+
         .badge-warning {
             background-color: #f6c23e;
         }
-        
+
         .card-header.bg-primary {
             background-color: #4e73df !important;
         }
-        
+
         .card-header.bg-secondary {
             background-color: #858796 !important;
         }
-        
+
         /* Improved table spacing */
         .table {
             width: 100%;
             margin-bottom: 0;
         }
-        
+
+        .sss {
+/*             overflow-y: scroll;
+            height: 250px;
+            display: block;
+ */
+/*             overflow: hidden;
+            overflow-y: scroll;
+            height: 250px; */
+        }
+
         .table th, .table td {
             padding: 12px 15px;
             vertical-align: middle;
         }
-        
+
         .table thead th {
             background-color: #f8f9fc;
             color: #5a5c69;
             border-bottom: 2px solid #e3e6f0;
         }
-        
+
         .table tbody tr {
             border-bottom: 1px solid #e3e6f0;
         }
-        
 
-        
         /* Summary section alignment */
-        .p-4 {
-            padding: 1.5rem !important;
+        .bg-light {
+            background-color: #f8f9fa !important;
         }
-        
-        .justify-content-end .col-md-6 {
-            padding-right: 0;
+
+        .badge.bg-light {
+            background-color: #f8f9fa !important;
+            color: #3a3b45 !important;
+            font-weight: 600;
+        }
+
+        /* Consistent card heights */
+        .h-100 {
+            height: 100% !important;
+        }
+
+        .cart-summary {
+            font-size: 1.2rem;
         }
     </style>
-    }
+}

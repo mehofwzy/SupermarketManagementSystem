@@ -51,7 +51,7 @@
                                 <label class="form-label">Add by Product Code</label>
                                 <div class="input-group">
                                     <input type="text" id="productCodeInput" class="form-control" placeholder="Scan or enter product code" />
-                                    <button type="button" class="btn btn-primary" onclick="addProductByCode()">
+                                    <button id="btnAddProductByCode" type="button" class="btn btn-primary" onclick="addProductByCode()">
                                         <i class="fas fa-plus mr-2"></i> Add
                                     </button>
                                 </div>
@@ -252,7 +252,25 @@
 
 @section Scripts {
     <script>
+                        
+
+
+
         $(document).ready(function () {
+
+
+            document.getElementById("productCodeInput").addEventListener("keypress",function(e){
+            //var btn = document.getElementById("btnAddProductByCode");
+            //btn.click();
+
+            if(e.key=="Enter"){
+                //alert("hi");
+                e.preventDefault();
+                addProductByCode();
+            }
+
+        });
+
             $("#productDropdown").select2({
                 placeholder: "Search products...",
                 allowClear: true,

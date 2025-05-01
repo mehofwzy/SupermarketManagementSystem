@@ -30,43 +30,15 @@
 <body class="d-flex flex-column min-vh-100">
     <!-- Sidebar Navigation -->
     <div class="app-container">
-        <div class="sidebar bg-dark">
+        <div class="sidebar bg-dark" id="sidebar">
             <div class="sidebar-header">
                 <a class="navbar-brand text-white fw-bold" asp-controller="Home" asp-action="Index">
                     <i class="fas fa-store-alt me-2"></i> <span style="font-size:13px;">Supermarket Management</span>
                 </a>
             </div>
-
             <div class="sidebar-menu">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Clients" ? "active" : "")" asp-controller="Clients" asp-action="Index">
-                            <i class="fas fa-users me-2"></i>Clients
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "active" : "")" asp-controller="Products" asp-action="Index">
-                            <i class="fas fa-boxes me-2"></i>Products
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" ? "active" : "")" asp-controller="Bills" asp-action="Index">
-                            <i class="fas fa-file-invoice me-2"></i>Bills
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn-new-bill" asp-controller="Bills" asp-action="Create">
-                            <i class="fas fa-plus-circle me-2"></i>New Bill
-                        </a>
-                    </li>
-                </ul>
+                @await Component.InvokeAsync("Sidebar")
             </div>
-
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="dropdown">
@@ -91,7 +63,7 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <button class="sidebar-toggle btn btn-link text-dark d-lg-none">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
             </button>
 
@@ -123,11 +95,89 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-        // Toggle sidebar on mobile
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('active');
+
+        // Toggle sidebar
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+
+            const isCollapsed = document.getElementById('sidebar').classList.contains('active');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
         });
 
+        // Initialize sidebar state from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+                document.getElementById('sidebar').classList.add('active');
+        }
+
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+
+            if (window.innerWidth <= 992 &&
+                !sidebar.contains(e.target) &&
+                e.target !== mobileBtn &&
+                !mobileBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+            }
+        });
+    });
+
+
+
+
+
+
+        // // Toggle sidebar on mobile
+        // document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+        //     document.querySelector('.sidebar').classList.toggle('active');
+        // });
+
+
+
+        // document.getElementById('productsMenu').addEventListener('click', function() {
+        //     //document.getElementById('productsMenu').classList.toggle('active');
+        //     document.getElementById('productsSubmenu').classList.toggle('show');
+        // });
+
+
+        // Toggle submenu - completely revised implementation
+        document.querySelectorAll('.has-submenu > .nav-link').forEach(item => {
+            item.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('sidebar');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                const isMobile = window.innerWidth <= 992;
+
+                if (!isCollapsed || isMobile) {
+                    e.preventDefault();
+                    const submenu = this.nextElementSibling;
+                    const parentItem = this.parentElement;
+
+                    // Close all other submenus first
+                    document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
+                        if (openSubmenu !== submenu) {
+                            openSubmenu.classList.remove('show');
+                            openSubmenu.previousElementSibling.parentElement.classList.remove('active');
+                        }
+                    });
+
+                    parentItem.classList.toggle('active');
+                    submenu.classList.toggle('show');
+                }
+            });
+        });
+
+
+        // Close sidebar when resizing to mobile if it was open
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+            }
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
