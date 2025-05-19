@@ -1,24 +1,44 @@
 ﻿@* @model List<string>
  *@
 <ul class="nav flex-column">
+
+
+
     <li class="nav-item">
         <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
-            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+           <i class="fas fa-tachometer-alt me-2"></i>
+            <span class="sidebar-text">Dashboard</span>
         </a>
+        <ul class="submenu">
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+        </ul>
     </li>
 @*     @if (Model.Contains("view_clients"))
     { *@
-        <li class="nav-item">
-            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Clients" ? "active" : "")" asp-controller="Clients" asp-action="Index">
-                <i class="fas fa-users me-2"></i>Clients
-            </a>
-        </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Clients" ? "active" : "")" asp-controller="Clients" asp-action="Index">
+            <i class="fas fa-users me-2"></i>
+            <span class="sidebar-text">Clients</span>
+        </a>
+        <ul class="submenu">
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Clients" ? "active" : "")" asp-controller="Clients" asp-action="Index">
+                    <span>Clients</span>
+                </a>
+            </li>
+        </ul>
+    </li>
 @*     } *@
 @*     @if (Model.Contains("view_products"))
     { *@
-        <li class="nav-item has-submenu">
-            <a class="nav-link" href="#" id="productsMenu">
-                <i class="fas fa-boxes me-2"></i>Products
+    <li class="nav-item has-submenu  @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "open" : "")">
+        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "active" : "")" href="#" id="productsMenu" data-toggle="submenu">
+                <i class="fas fa-boxes me-2"></i>
+                <span class="sidebar-text">Products</span>
             </a>
             <ul class="submenu @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "show" : "")" id="productsSubmenu">
                 <li class="nav-item">
@@ -33,21 +53,81 @@
                 </li>
             </ul>
         </li>
+
 @*     }
     @if (Model.Contains("view_bills"))
     { *@
-        <li class="nav-item">
-            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" ? "active" : "")" asp-controller="Bills" asp-action="Index">
-                <i class="fas fa-file-invoice me-2"></i>Bills
+    <li class="nav-item has-submenu  @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" ? "open" : "")">
+        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" ? "active" : "")" href="#" data-toggle="submenu">
+                <i class="fas fa-file-invoice me-2"></i>
+                <span class="sidebar-text">Bills</span>
             </a>
+            <ul class="submenu @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" ? "show" : "")">
+                <li hidden><a class="link_name" href="#">Bills</a></li>
+                <li class="nav-item">
+                <a class="nav-link @((ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index") ? "active" : "")" asp-controller="Bills" asp-action="Index">
+                    <span>All Bills</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link @((ViewContext.RouteData.Values["Controller"]?.ToString() == "Bills" && ViewContext.RouteData.Values["Action"]?.ToString() == "Create") ? "active" : "")" asp-controller="Bills" asp-action="Create">
+                    <span>New Bill</span>
+                    </a>
+                </li>
+            </ul>
         </li>
 @*     }
     @if (Model.Contains("add_bills"))
     { *@
-        <li class="nav-item">
-            <a class="nav-link btn-new-bill" asp-controller="Bills" asp-action="Create">
-                <i class="fas fa-plus-circle me-2"></i>New Bill
-            </a>
-        </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Bills" asp-action="Create">
+            <i class="fas fa-plus-circle me-2"></i>
+            <span class="sidebar-text">New Bill</span>
+        </a>
+    </li>
+    
+
 @*     } *@
+
+    <li hidden class="nav-item has-submenu">
+        <a class="nav-link" href="#" id="productsMenu" data-toggle="submenu">
+            <i class="fas fa-boxes me-2"></i>
+            <span class="sidebar-text">Products</span>
+        </a>
+        <ul class="submenu">
+            <li><a class="link_name" href="#">tata title</a></li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item"><hr class="dropdown-divider"></li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span>Products Grid</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+
+    <li hidden class="nav-item no-submenu" data-label="Test 1">
+        <a class="nav-link" href="#">
+            <i class="fas fa-plus-circle me-2"></i>
+            <span class="sidebar-text">Test 1</span>
+        </a>
+    </li>
+
+    <li hidden class="nav-item">
+        <a class="nav-link" href="#">
+            <i class="fas fa-plus-circle me-2"></i>
+            <span class="sidebar-text">Test 2</span>
+        </a>
+        <ul class="sub-menu">
+            <li><a class="link_name" href="#">tata 2</a></li>
+            <li><a href="#">Test</a></li>
+            <li><a href="#">Test</a></li>
+            <li><a href="#">Test</a></li>
+        </ul>
+    </li>
 </ul>

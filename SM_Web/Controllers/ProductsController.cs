@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SM_Web.Helpers;
 using SM_Web.Models;
@@ -13,6 +14,8 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SM_Web.Controllers
 {
+    //[Authorize(Roles = "hishtecpishtec")]
+
     public class ProductsController : Controller
     {
         private readonly ApiService _apiService;
@@ -34,7 +37,7 @@ namespace SM_Web.Controllers
 
             // Check if the user has permission to view products
             //Guid userId = Guid.Parse(Request.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            if (!_authService.CheckUserPermissionAsync(HttpContext, "Product", "View").Result)
+            if (!await _authService.CheckUserPermissionAsync(HttpContext, "Product", "View"))
                 return RedirectToAction("Error", "Home");
 
             //if (!_jwtHelperService.HasPermission("view_products"))

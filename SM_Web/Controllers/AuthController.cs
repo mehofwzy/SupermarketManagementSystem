@@ -7,6 +7,8 @@ using SM_Web.Services;
 using SM_Web.ViewModels;
 using SM_Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 
 namespace SM_Web.Controllers
@@ -68,7 +70,7 @@ namespace SM_Web.Controllers
                 ModelState.AddModelError(string.Empty, "Login failed. Please check your credentials.");
                 return View(model);
             }
-            
+
             //test to add it in Session 
             //HttpContext.Session.SetString("jwt", result.Token);
 
@@ -78,7 +80,7 @@ namespace SM_Web.Controllers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.Now.AddHours(1)
+                Expires = DateTimeOffset.Now.AddDays(7)
             });
 
             // Set Refresh Token Cookie
@@ -90,14 +92,39 @@ namespace SM_Web.Controllers
                 Expires = DateTimeOffset.Now.AddDays(7)
             });
 
+
+
+            //Request.Headers.Authorization = "Bearer " + result.Token;
+
+
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, "b4178093-48d2-4fb4-05d9-08dd795c50e4") ,
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, "SM_Web_CookieAuth");
+
+            var authProperties = new AuthenticationProperties
+            {
+                
+                IssuedUtc = DateTimeOffset.Now,
+                ExpiresUtc = DateTimeOffset.Now.AddMinutes(60),
+                IsPersistent = false,
+                AllowRefresh = true,
+            };
+
+            await HttpContext.SignInAsync("SM_Web_CookieAuth", new ClaimsPrincipal(claimsIdentity), authProperties);
+
+
             return RedirectToAction("Index", "Home");
         }
 
 
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("jwt");
-            Response.Cookies.Delete("refreshToken");
+            //Response.Cookies.Delete("jwt");
+            //Response.Cookies.Delete("refreshToken");
             return RedirectToAction("Login");
         }
 
@@ -127,6 +154,7 @@ namespace SM_Web.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.Now.AddHours(1)
             });
+
 
             return RedirectToAction("Index", "Home");
         }

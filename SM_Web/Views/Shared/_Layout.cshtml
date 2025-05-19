@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,6 +20,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SM_Web.styles.css" asp-append-version="true" />
 
     <!-- jQuery (Required for Select2) -->
@@ -30,21 +31,25 @@
 <body class="d-flex flex-column min-vh-100">
     <!-- Sidebar Navigation -->
     <div class="app-container">
-        <div class="sidebar bg-dark" id="sidebar">
+        @{
+            var isCollapsed = Context.Request.Cookies["sidebarCollapsed"] == "true";
+            var sidebarClass = isCollapsed ? "collapsed" : "";
+        }
+        <div id="sidebar" class="sidebar bg-dark @sidebarClass">
             <div class="sidebar-header">
-                <a class="navbar-brand text-white fw-bold" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-store-alt me-2"></i> <span style="font-size:13px;">Supermarket Management</span>
+                <a class="sidebar-title navbar-brand text-white fw-bold" asp-controller="Home" asp-action="Index">
+                    <i class="sidebar-text fas fa-store-alt me-2"></i> <span style="font-size:13px;">Supermarket Management</span>
                 </a>
             </div>
             <div class="sidebar-menu">
                 @await Component.InvokeAsync("Sidebar")
             </div>
-            <div class="sidebar-footer">
+            <div class="sidebar-footer mt-auto px-3 py-2">
                 <div class="user-profile">
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="https://ui-avatars.com/api/?name=Mohamed&background=3498db&color=fff" alt="User" class="rounded-circle me-2" width="32" height="32">
-                            <strong>Mohamed</strong>
+                            <strong class="sidebar-text">Mohamed</strong>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
@@ -97,19 +102,21 @@
     <script>
 
         // Toggle sidebar
-            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
-
-            const isCollapsed = document.getElementById('sidebar').classList.contains('active');
-            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            //mobile
+            if(window.innerWidth <= 992){
+                document.getElementById('sidebar').classList.toggle('active');
+                document.getElementById('sidebar').classList.remove('collapsed');
+                localStorage.setItem('sidebarCollapsed', false);
+            }
+            //full window view
+            else{
+                const sidebar = document.getElementById('sidebar');
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                //localStorage.setItem('sidebarCollapsed', isCollapsed);
+                document.cookie = `sidebarCollapsed=${isCollapsed}; path=/; max-age=31536000`;
+            }
         });
-
-        // Initialize sidebar state from localStorage
-        document.addEventListener('DOMContentLoaded', function() {
-        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-        if (isCollapsed) {
-                document.getElementById('sidebar').classList.add('active');
-        }
 
 
         // Close sidebar when clicking outside on mobile
@@ -117,59 +124,10 @@
             const sidebar = document.getElementById('sidebar');
             const mobileBtn = document.getElementById('mobileMenuBtn');
 
-            if (window.innerWidth <= 992 &&
-                !sidebar.contains(e.target) &&
-                e.target !== mobileBtn &&
-                !mobileBtn.contains(e.target)) {
-                    sidebar.classList.remove('active');
+            if (window.innerWidth <= 992 && !sidebar.contains(e.target) && e.target !== mobileBtn && !mobileBtn.contains(e.target)) {
+                sidebar.classList.remove('active');
             }
         });
-    });
-
-
-
-
-
-
-        // // Toggle sidebar on mobile
-        // document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-        //     document.querySelector('.sidebar').classList.toggle('active');
-        // });
-
-
-
-        // document.getElementById('productsMenu').addEventListener('click', function() {
-        //     //document.getElementById('productsMenu').classList.toggle('active');
-        //     document.getElementById('productsSubmenu').classList.toggle('show');
-        // });
-
-
-        // Toggle submenu - completely revised implementation
-        document.querySelectorAll('.has-submenu > .nav-link').forEach(item => {
-            item.addEventListener('click', function(e) {
-                const sidebar = document.getElementById('sidebar');
-                const isCollapsed = sidebar.classList.contains('collapsed');
-                const isMobile = window.innerWidth <= 992;
-
-                if (!isCollapsed || isMobile) {
-                    e.preventDefault();
-                    const submenu = this.nextElementSibling;
-                    const parentItem = this.parentElement;
-
-                    // Close all other submenus first
-                    document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
-                        if (openSubmenu !== submenu) {
-                            openSubmenu.classList.remove('show');
-                            openSubmenu.previousElementSibling.parentElement.classList.remove('active');
-                        }
-                    });
-
-                    parentItem.classList.toggle('active');
-                    submenu.classList.toggle('show');
-                }
-            });
-        });
-
 
         // Close sidebar when resizing to mobile if it was open
         window.addEventListener('resize', function() {
@@ -178,6 +136,79 @@
                 sidebar.classList.remove('active');
             }
         });
+
+        // Toggle submenu
+        $(document).ready(function () {
+            $('.nav-link[data-toggle="submenu"]').on('click', function (e) {
+                const sidebar = $('.sidebar');
+                if (!sidebar.hasClass('collapsed')) {
+                    e.preventDefault();
+                    const parent = $(this).closest('.has-submenu');
+                    $('.has-submenu').not(parent).removeClass('open active'); // close others
+                    parent.toggleClass('open active'); // toggle this one
+                }
+            });
+        });
+
+
+        // // Initialize sidebar state from localStorage for full window view
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        //     if (isCollapsed) {
+        //         document.getElementById('sidebar').classList.add('collapsed');
+        //     }
+        // });
+
+
+        // Toggle submenu - completely revised implementation
+        // document.querySelectorAll('.has-submenu > .nav-link').forEach(item => {
+        //     item.addEventListener('click', function(e) {
+        //         const sidebar = document.getElementById('sidebar');
+        //         const isCollapsed = sidebar.classList.contains('collapsed');
+        //         const isMobile = window.innerWidth <= 992;
+
+        //         if (!isCollapsed || isMobile) {
+        //             e.preventDefault();
+        //             const submenu = this.nextElementSibling;
+        //             const parentItem = this.parentElement;
+
+        //             // Close all other submenus first
+        //             document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
+        //                 if (openSubmenu !== submenu) {
+        //                     openSubmenu.classList.remove('show');
+        //                     openSubmenu.previousElementSibling.parentElement.classList.remove('active');
+        //                 }
+        //             });
+
+        //             parentItem.classList.toggle('active');
+        //             submenu.classList.toggle('show');
+        //         }
+        //     });
+        // });
+
+        // // Toggle sidebar on mobile
+        // document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+        //     document.querySelector('.sidebar').classList.toggle('active');
+        // });
+
+
+        // document.getElementById('productsMenu').addEventListener('click', function() {
+        //     //document.getElementById('productsMenu').classList.toggle('active');
+        //     document.getElementById('productsSubmenu').classList.toggle('show');
+        // });
+
+
+        //         $(document).ready(function () {
+        //     $('.sidebar.collapsed .has-submenu').hover(
+        //         function () {
+        //             $(this).find('.submenu').stop(true, true).fadeIn(200);
+        //         },
+        //         function () {
+        //             $(this).find('.submenu').stop(true, true).fadeOut(200);
+        //         }
+        //     );
+        // });
+
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

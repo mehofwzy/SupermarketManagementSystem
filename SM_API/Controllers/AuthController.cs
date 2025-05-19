@@ -114,7 +114,8 @@ namespace SM_API.Controllers
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 Expires = DateTime.UtcNow.AddDays(7),
                 IsRevoked = false,
-                UserId = user.Id
+                UserId = user.Id,
+                ReplacedByToken = storedToken.Token
             };
 
             // Revoke old token

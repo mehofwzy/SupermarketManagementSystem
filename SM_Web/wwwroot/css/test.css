@@ -1,1 +1,223 @@
-﻿
+﻿/* Sidebar styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    min-width: 240px;
+    background: #212529;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    z-index: 1040;
+    transition: 0.4s ease;
+}
+
+    .sidebar.collapsed {
+        width: 64px;
+        min-width: 64px;
+    }
+
+    .sidebar .sidebar-header {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .sidebar .sidebar-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-left: 8px;
+        transition: opacity 0.2s;
+    }
+
+    .sidebar.collapsed .sidebar-title,
+    .sidebar.collapsed .sidebar-text {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+        display: inline-block;
+    }
+
+    .sidebar .nav {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .sidebar .nav-link {
+        color: #adb5bd;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        transition: background 0.2s, color 0.2s;
+        white-space: nowrap;
+    }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: #343a40;
+            color: #fff;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 1.25rem;
+            min-width: 24px;
+            text-align: center;
+        }
+
+    .sidebar .submenu {
+        display: none;
+        padding-left: 1.5rem;
+    }
+
+    .sidebar .has-submenu.open > .submenu {
+        display: block;
+    }
+
+    .sidebar .has-submenu > .nav-link .bi-chevron-down {
+        transition: transform 0.2s;
+    }
+
+    .sidebar .has-submenu.open > .nav-link .bi-chevron-down {
+        transform: rotate(180deg);
+    }
+
+.sidebar-footer {
+    border-top: 1px solid #343a40;
+    padding: 0.75rem 1rem;
+    background: #212529;
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+}
+
+.sidebar.collapsed .sidebar-footer .sidebar-text {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-footer .dropdown-toggle::after {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-footer .dropdown-menu {
+    left: 64px !important;
+    right: auto !important;
+}
+
+.sidebar.collapsed .submenu,
+.sidebar.collapsed .has-submenu.open > .submenu {
+    display: none !important;
+}
+
+.sidebar.collapsed .has-submenu > .nav-link .bi-chevron-down {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-footer .dropdown-menu {
+    min-width: 120px;
+}
+
+.sidebar.collapsed .sidebar-footer .dropdown-toggle {
+    padding: 0;
+    width: 40px;
+    justify-content: center;
+}
+
+    .sidebar.collapsed .sidebar-footer .dropdown-toggle img {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .sidebar-footer .dropdown-toggle .sidebar-text {
+        display: none;
+    }
+
+.sidebar .sidebar-footer .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .sidebar .sidebar-footer .dropdown-toggle img {
+        margin-right: 0.5rem;
+    }
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        left: -240px;
+        transition: left 0.2s, width 0.2s;
+    }
+
+        .sidebar.show {
+            left: 0;
+        }
+
+        .sidebar.collapsed {
+            left: -64px;
+        }
+
+    #page-content-wrapper {
+        margin-left: 0 !important;
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1039;
+    }
+
+    .sidebar.show ~ .sidebar-backdrop {
+        display: block;
+    }
+}
+
+@media (min-width: 992px) {
+    #page-content-wrapper {
+        margin-left: 240px;
+        transition: margin-left 0.2s;
+    }
+
+    .sidebar.collapsed ~ #page-content-wrapper {
+        margin-left: 64px;
+    }
+}
+
+
+/* Flyout submenu for collapsed sidebar */
+.sidebar.collapsed .has-submenu .submenu {
+    display: none;
+    position: absolute;
+    left: 64px;
+    top: 0;
+    min-width: 180px;
+    background: #212529;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    z-index: 1050;
+    padding: 0.5rem 0;
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.sidebar.collapsed .has-submenu:hover > .submenu,
+.sidebar.collapsed .has-submenu:focus-within > .submenu {
+    display: block;
+}
+
+.sidebar.collapsed .has-submenu.open > .submenu {
+    display: block;
+}
+
+.sidebar.collapsed .has-submenu {
+    position: relative;
+}
+
+.sidebar.collapsed .submenu .nav-link {
+    padding: 0.5rem 1rem;
+}

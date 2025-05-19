@@ -4,9 +4,12 @@ using SM_Web.ViewModels;
 using SM_Web.Models;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SM_Web.Controllers
 {
+    //[Authorize(Roles = "admin")]
+
     public class ClientsController : Controller
     {
         private readonly ApiService _apiService;

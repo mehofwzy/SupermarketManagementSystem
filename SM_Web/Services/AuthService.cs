@@ -15,6 +15,8 @@ namespace SM_Web.Services
         }
         public async Task<bool> CheckUserPermissionAsync(HttpContext context, string objectName, string permissionName)
         {
+           var his =  context.Request.Headers;
+
             var user = context?.User;
             var userClaims = context?.User?.Claims;
             string? userName = context?.User.Identity?.Name;
@@ -28,7 +30,7 @@ namespace SM_Web.Services
             var userId = jwt?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
 
-            var response = await _apiService.GetAsync<bool?>($"auth/checkUserPermission?userId={userId}&objectName={objectName}&permissionName={permissionName}", null);
+            var response = await _apiService.GetAsync<bool?>($"auth/checkUserPermission?userId={userIdentifier}&objectName={objectName}&permissionName={permissionName}", null);
 
             if (response.HasValue)
             {

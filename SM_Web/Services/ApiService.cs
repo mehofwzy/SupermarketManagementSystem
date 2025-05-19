@@ -182,13 +182,27 @@ namespace SM_Web.Services
 
         public async Task<bool> RefreshTokenAsync()
         {
-            var refreshToken = _httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+            if (_httpContextAccessor.HttpContext == null)
+                return false;
+
+            string? refreshToken = null;
+
+            // Check if already refreshed the token in this request
+            if (_httpContextAccessor.HttpContext.Items.ContainsKey("new_RefreshedToken"))
+            {
+                refreshToken = _httpContextAccessor.HttpContext.Items["new_RefreshedToken"] as string;
+            }
+            // get it from Request Cookies
+            else
+            {
+                refreshToken = _httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+            }
 
             if (string.IsNullOrEmpty(refreshToken))
                 return false;
 
             var content = new StringContent(
-                JsonSerializer.Serialize(new { RefreshToken = refreshToken }),
+                JsonSerializer.Serialize(refreshToken),
                 Encoding.UTF8,
                 "application/json"
             );
@@ -202,6 +216,13 @@ namespace SM_Web.Services
 
             if (result == null || string.IsNullOrEmpty(result.Token))
                 return false;
+
+            if (_httpContextAccessor.HttpContext == null)
+                return false;
+
+            //Cache token in request for future use
+            _httpContextAccessor.HttpContext.Items["new_Token"] = result.Token;
+            _httpContextAccessor.HttpContext.Items["new_RefreshedToken"] = result.RefreshToken;
 
             // Update cookies
             _httpContextAccessor.HttpContext.Response.Cookies.Append("jwt", result.Token, new CookieOptions
@@ -225,7 +246,20 @@ namespace SM_Web.Services
 
         private async Task AddAuthHeaderAsync()
         {
-            var token = _httpContextAccessor.HttpContext?.Request.Cookies["jwt"];
+            string? token = null;
+
+            // 🔍 Check if already refreshed the token in this request
+            if (_httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Items.ContainsKey("new_Token"))
+            {
+                token = _httpContextAccessor.HttpContext.Items["new_Token"] as string;
+            }
+
+            // Fallback to old cookie if no refreshed token
+            if (string.IsNullOrEmpty(token))
+            {
+                token = _httpContextAccessor.HttpContext?.Request.Cookies["jwt"];
+            }
+
             if (!string.IsNullOrEmpty(token))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
